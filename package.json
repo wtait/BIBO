@@ -1,0 +1,9 @@
+{
+  "name": "BIBO",
+  "version": "1.0.0",
+  "description": "bibo network using mtp on ethereum",
+  "main": "index.js",
+  "repository": "https://github.com/wtait/BIBO.git",
+  "author": "Wade Tait",
+  "license": "MIT"
+}
