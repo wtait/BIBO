@@ -2,7 +2,7 @@
 pragma solidity 0.5.16;
 pragma experimental ABIEncoderV2;
 
-//import "../base/Owned.sol";
+import "../roles/Owned.sol";
 import "./StakerProxy.sol";
 
 
@@ -20,7 +20,6 @@ contract AuthereumProxyFactory is Owned {
 
     /// @dev Constructor
     /// @param _implementation Address of the Authereum implementation
-    /// @param _authereumEnsManagerAddress Address for the Authereum ENS Manager contract
     constructor(address _implementation) public {
         initCode = abi.encodePacked(type(AuthereumProxy).creationCode, uint256(_implementation));
         emit InitCodeChanged(initCode);
