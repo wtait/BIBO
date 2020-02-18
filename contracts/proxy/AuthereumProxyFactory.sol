@@ -3,7 +3,7 @@ pragma solidity 0.5.16;
 pragma experimental ABIEncoderV2;
 
 import "../roles/Owned.sol";
-import "./StakerProxy.sol";
+import "./AuthereumProxy.sol";
 
 
 /**
