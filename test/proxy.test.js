@@ -11,13 +11,13 @@ require("chai")
   .use(require("chai-as-promised"))
   .should();
 
-  describe('MTP', () => {
+  describe('Proxy accounts', () => {
 
     const MTP = contract.fromArtifact('MTP');
     const NFTContract = contract.fromArtifact('TestNFT');
     const[alice, bob] = accounts;
-
-    //const ProxyFactory = contract.fromArtifact('AuthereumProxyFactory');
+    const ProxyFactory = contract.fromArtifact('AuthereumProxyFactory');
+    const ProxyAccount = contract.fromArtifact('AuthereumProxy');
 
 
     beforeEach(async function() {
@@ -28,25 +28,26 @@ require("chai")
         this.nftokenId = new BN('5042');
         this.nft = await this.nftokenContract.mintUniqueTokenTo(alice, this.nftokenId);
         await this.mtp.depositToken(this.nfTokenAddress, alice, this.nftokenId);
-
-        //this.proxyFactory = await ProxyFactory.new(this.mtpAddress);
-        //console.log("proxy Factory" + this.proxyFactory);
+        this.proxyFactory = await ProxyFactory.new(this.mtpAddress);
+        this.proxyAccount = await ProxyAccount.new(this.proxyFactory.address);
+        // console.log(
+        //     "mtp address: " + this.mtpAddress + '\n' + 
+        //     "proxy Factory address: " + this.proxyFactory.address + '\n' +
+        //     'proxy account address: ' + this.proxyAccount.address
+        //);
     });
 
-    describe("NFT Transfers", function() {
+    describe("Proxy Accounts", function() {
 
-        it("should be able to transfer an nft from sender to receiver", async function() {
+        it("should deploy a proxy account", async function() {
             //console.log(this.mtpAddress);
-            let owner = await this.nftokenContract.ownerOf(this.nftokenId);
-            owner.should.equal(alice);
-            await this.nftokenContract.setApprovalForAll(this.mtpAddress, true, {from: alice});
-            await this.mtp.mtpTransfer(this.nfTokenAddress, bob, this.nftokenId, {from: alice});
-            let newOwner = await this.nftokenContract.ownerOf(this.nftokenId);
-            newOwner.should.equal(bob);
+            let ProxyAccountAddress = this.proxyAccount.address
+            ProxyAccountAddress.should.be.an('string').that.includes('0x');
         });
-        it('should have a mapping called nftokens', async function() {
-            const tokenMapping = await this.mtp.tokens;
-            tokenMapping.should.to.exist;
+        it('should point to mtp for implementation', async function() {
+            
+            let implementationAddress = await this.proxyAccount.implementation.call();
+            implementationAddress.should.equal(this.mtpAddress);
         });
         it('should add a Token struct to nftokens mapping when a new token is staked', async function() {
             await this.nftokenContract.setApprovalForAll(this.mtpAddress, true, {from: alice});

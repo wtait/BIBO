@@ -14,9 +14,9 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 contract MTP {
 
     //constructor
-    constructor() public {
-        // ...
-    }
+    // constructor() public {
+    //     // ...
+    // }
 
     IERC721 public ERC721Interface;
 
