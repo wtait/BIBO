@@ -1,0 +1,13 @@
+FROM node:latest
+
+RUN apt-get -y update &&\
+    apt-get -y upgrade &&\
+    apt-get install build-essential -y &&\
+    npm install -g truffle  &&\
+    npm install -g @openzeppelin/contracts
+
+RUN mkdir -p /app
+ADD . /app
+WORKDIR /app
+RUN npx npm-check-updates -u &&\ 
+    npm install
