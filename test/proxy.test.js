@@ -47,48 +47,11 @@ require("chai")
         it('should point to mtp for implementation', async function() {
             
             let implementationAddress = await this.proxyAccount.implementation.call();
-            implementationAddress.should.equal(this.mtpAddress);
+            implementationAddress.should.equal(this.proxyFactory.address);
         });
-        it('should add a Token struct to nftokens mapping when a new token is staked', async function() {
-            await this.nftokenContract.setApprovalForAll(this.mtpAddress, true, {from: alice});
-            await this.mtp.mtpTransfer(this.nfTokenAddress, bob, this.nftokenId, {from: alice});
-            const newTokenStruct = await this.mtp.tokens.call(this.nftokenId);
-            const newTokenId = newTokenStruct.token_id_.toNumber();
-            newTokenId.should.equal(this.nftokenId.toNumber());
-        });
-        it('should keep bibo total supply at 0 after transfers',async function() {
-            let stakeChains = [];
-            for(i = 0; i < accounts.length - 1; i++) {
-                let sender = accounts[i];
-                let receiver = accounts[i + 1];
-                await this.nftokenContract.setApprovalForAll(this.mtpAddress, true, {from: sender});
-                await this.mtp.mtpTransfer(this.nfTokenAddress, receiver, this.nftokenId, {from: sender});
-                let stakeChain = [];
-
-                let numStakers = await this.mtp.getStakeChainLength.call(this.nftokenId);
-                let n = 0;
-                while(n < numStakers) {
-                    let currentStakerAddress = await this.mtp.stakeChain.call(this.nftokenId, n);
-                    stakeChain.push(currentStakerAddress);
-                    n++;
-                }
-                stakeChains.push(stakeChain);
-            }
-
-            let lastChain = stakeChains[stakeChains.length - 1];
-            
-            for(i = 0; i < lastChain.length; i++) {
-                let address = lastChain[i];
-                let balance = await this.mtp.balances.call(address);
-                lastChain[i] = {"address": address, "balance": balance.toNumber()};
-            }
-
-            let biboTotalSupply = lastChain.reduce(function(total, account) {
-                total += account.balance;
-                return total;
-            }, 0);
-
-            biboTotalSupply.should.equal(0);
+        it('should return address of new proxy', async function() {
+           let newProxyAddress = await this.proxyFactory.createProxy.call(1,'test', []);
+           console.log(newProxyAddress);
         });
     });
 
