@@ -2,11 +2,10 @@ FROM node:latest
 
 RUN apt-get -y update &&\
     apt-get -y upgrade &&\
-    apt-get install build-essential yarn python make g++ -y &&\
-    yarn global add truffle 
+    apt-get install build-essential -y &&\
+    npm i -g truffle 
 
 RUN mkdir -p /app
 ADD . /app
 WORKDIR /app
 
-RUN yarn install --prod=false  
