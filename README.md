@@ -1,7 +1,7 @@
 # BIBO
 BIBO network using MTP on Ethereum
 
-using docker-compose 
+don't use docker-compose ignore the dockerfiles  
 ```
 npm install  
 truffle compile 
