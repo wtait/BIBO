@@ -4,7 +4,7 @@ EXPOSE 8545
 
 RUN apt-get update &&\
     apt-get upgrade -y &&\
-    apt-get install build-essential -y &&\
-    npm install -g ganache-cli
+    apt-get install build-essential  yarn -y &&\
+    yarn global add ganache-cli
 
 CMD ganache-cli -h 0.0.0.0 -p 8545

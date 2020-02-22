@@ -2,11 +2,11 @@ FROM node:latest
 
 RUN apt-get -y update &&\
     apt-get -y upgrade &&\
-    apt-get install build-essential -y &&\
-    npm install -g truffle @openzeppelin/contracts @openzeppelin/test-environment @openzeppelin/test-helpers 
+    apt-get install build-essential yarn python make g++ -y &&\
+    yarn global add truffle 
 
 RUN mkdir -p /app
 ADD . /app
 WORKDIR /app
-RUN npx npm-check-updates -u &&\ 
-    npm install
+
+RUN yarn install --prod=false  
