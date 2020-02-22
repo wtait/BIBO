@@ -15,8 +15,10 @@ import "./AuthereumProxy.sol";
 contract AuthereumProxyFactory is Owned {
     string constant public authereumProxyFactoryVersion = "2019111500";
     bytes private initCode;
+    AuthereumProxy[] public proxies;
 
     event InitCodeChanged(bytes initCode);
+    event createNewProxy(AuthereumProxy newProxy);
 
     /// @dev Constructor
     /// @param _implementation Address of the Authereum implementation
@@ -85,8 +87,15 @@ contract AuthereumProxyFactory is Owned {
             require(success, "APF: Unsuccessful account initialization");
         }
 
+        AuthereumProxy newProxy = new AuthereumProxy(addr);
+        proxies.push(newProxy);
+        emit createNewProxy(newProxy);
 
-        return AuthereumProxy(addr);
+        return newProxy;
+    }
+
+    function getAllProxies() public view returns(AuthereumProxy[] memory){
+      return proxies;
     }
 
     /// @dev Generate a salt out of a uint256 value and the sender

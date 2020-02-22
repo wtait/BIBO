@@ -28,7 +28,7 @@ contract AuthereumProxy {
     /// @notice A payable fallback needs to be implemented in the implementation contract
     /// @notice This is a low level function that doesn't return to its internal call site.
     /// @notice It will return to the external caller whatever the implementation returns.
-    function () external payable {
+    function () external payable  {
         if (msg.data.length == 0) return;
         address _implementation = implementation();
 

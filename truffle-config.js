@@ -1,5 +1,5 @@
 const HOST = process.env.RPC_HOST || "localhost";
-const PORT = process.env.RPC_PORT || 8545;
+const PORT = process.env.RPC_PORT || 7545;
 
 module.exports = {
   networks: {

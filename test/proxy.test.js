@@ -6,6 +6,7 @@ const {
   expectRevert // Assertions for transactions that should fail
 } = require("@openzeppelin/test-helpers");
 const { ZERO_ADDRESS } = constants;
+const truffleAssert = require("truffle-assertions");
 
 require("chai")
   .use(require("chai-as-promised"))
@@ -49,13 +50,19 @@ describe("Proxy accounts", () => {
       implementationAddress.should.equal(this.proxyFactory.address);
     });
     it("should return address of new proxy", async function() {
-      let newProxyAddress = await this.proxyFactory.createProxy.call(
-        1,
-        "test",
-        []
-      );
-      console.log(newProxyAddress);
+      await this.proxyFactory.createProxy(1231221, "test", []); //don't need to call .call() to access func in truffle
+      let proxies = await this.proxyFactory.getAllProxies();
+      //console.log(proxies); //debug
+      let newProxy = await ProxyAccount.at(proxies[0]);
+      //console.log(newProxy.address); //debug
+      assert.equal(proxies[0], newProxy.address);
+      let impl_addr = await newProxy.implementation(); //should return addr MTP
+      //console.log(impl_addr); //debug
+      let new_mtp = await MTP.at(impl_addr);
+      //console.log(new_mtp.address); //debug
+      assert.equal(impl_addr, new_mtp.address);
+      let tokenInfo = await new_mtp.tokens(this.nftokenId);
+      console.log(tokenInfo);
     });
   });
 });
-
