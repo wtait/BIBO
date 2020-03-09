@@ -55,12 +55,14 @@ describe("Proxy accounts", () => {
       //console.log(proxies); //debug
       let newProxy = await ProxyAccount.at(proxies[0]);
       //console.log(newProxy.address); //debug
-      assert.equal(proxies[0], newProxy.address);
+      //assert.equal(proxies[0], newProxy.address);
+      proxies[0].should.equal(newProxy.address);
       let impl_addr = await newProxy.implementation(); //should return addr MTP
       //console.log(impl_addr); //debug
       let new_mtp = await MTP.at(impl_addr);
       //console.log(new_mtp.address); //debug
-      assert.equal(impl_addr, new_mtp.address);
+      //assert.equal(impl_addr, new_mtp.address);
+      impl_addr.should.equal(new_mtp.address);
       let tokenInfo = await new_mtp.tokens(this.nftokenId);
       console.log(tokenInfo);
     });

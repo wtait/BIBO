@@ -7,3 +7,10 @@ module.exports = async deployer => {
   await deployer.deploy(ProxyFactory, MTP.address);
   await deployer.deploy(ProxyAccount, ProxyFactory.address);
 };
+
+
+//deployer.deploy => storage, interface, library    //deploy base contracts
+
+        //deployer.deploy => mtpfactory(storage, interface, library)   //mtpfactory 
+
+            //mtpfactory.newBIBOnetwork()

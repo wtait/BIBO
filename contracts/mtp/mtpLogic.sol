@@ -4,29 +4,28 @@ pragma solidity ^0.5.12;
 
 // Import statements
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+//import "/mtpStorage.sol";
 
 
 
 // Interfaces
+    //IERC721 public ERC721Interface;
+    //IMTP public MTPInterface
 // Libraries
+
 // Contracts
 
-contract MTP {
+library MTP {
 
     //constructor
     // constructor() public {
     //     // ...
     // }
 
-    IERC721 public ERC721Interface;
+    //IERC721 public ERC721Interface;
 
 // Type declarations
 // State variables
-    mapping(uint256 => Token) public tokens;//maps token id to token struct
-    mapping(address => Staker) public stakers;
-    mapping(address => int256) public balances; //bibo balances. can be positive or negative;
-    mapping(uint256 => address[]) public stakeChain;  //maps a token id to an array of staker addresses
-    mapping(uint256 => address[]) public stakeQueu; //pending transfer callers of token when paused
 
 
     struct Staker { //change to TokenStaker
@@ -108,19 +107,9 @@ contract MTP {
     //public - all can accesscontract
         // depositToken
     function depositToken(address contractAddress, address tokenOwner, uint256 tokenId) public {
-        if(stakers[tokenOwner].staker_Address_ != tokenOwner) {
-            addStaker(tokenOwner);
+        if(!mtpStorage.getToken(contractAddress, tokenId)) {
+            mtpStorage.setToken(tokenContractAddress, tokenId)
         }
-        if(stakers[contractAddress].staker_Address_ != contractAddress) {
-            addStaker(contractAddress);
-        }
-        Token storage t_ = tokens[tokenId];
-        t_.token_Address_ = contractAddress;
-        t_.token_id_ = tokenId;
-        t_.token_Stake_Balance_ = 1;
-        t_.is_paused_ = false;
-        stakeChain[tokenId].push(contractAddress);
-        stakeChain[tokenId].push(tokenOwner);
 
         emit TokenAdded(contractAddress, tokenOwner, tokenId);
     }
@@ -146,17 +135,6 @@ contract MTP {
         // }
     // }
 
-    function addStaker(address stakerAddress_) public {
-        balances[stakerAddress_] = 0;
-        stakers[stakerAddress_] = Staker(
-            {
-                staker_Address_: stakerAddress_,
-                staker_Stake_Balance_: 0
-            }
-        );
-
-        emit StakerAdded(stakerAddress_);
-    }
         // addStakerToQeue
             //
         // removeStaker
