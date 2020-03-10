@@ -5,7 +5,6 @@ pragma solidity ^0.5.12;
 contract mtpStorage {
 // State variables
     //mapping(uint256 => Token) public tokens;//maps token id to token struct
-    //mapping(address => Staker) public stakers;
     mapping(address => uint256[]) public tokens; //maps token minting contracts  (i.e. crypto kitties, decentraland, etc.) to individual tokens that have been deposited for mtp sharing
     mapping(address => address[]) public proxies; // maps externaly owned addresses to their mtp generated proxies
     mapping(address => int256) public balances; //bibo balances. can be positive or negative;
@@ -15,6 +14,10 @@ contract mtpStorage {
 
     function getTokens(address tokenContractAddress) returns (uint256[]) {
         return tokens[tokenContractAddress]
+    }
+
+    function getToken(address tokenContractAddress, uint256 tokenId) returns (int256) {
+        return tokens[tokenContractAddress][tokenId]
     }
 
     function setToken(address tokenContractAddress, uint256 tokenId) {
@@ -45,8 +48,12 @@ contract mtpStorage {
         return stakers[tokenId]
     }
 
+    function getStaker(uint256 tokenId, address stakerAddress) returns (int256) {
+        return stakers[tokenId][stakerAddress]
+    }
+
     function setStaker(uint256 tokenId, address newStaker) {
-        stakeChain[tokenId].push(newStaker)
+        stakers[tokenId].push(newStaker)
     }
 
     // function removeStaker(uint256 tokenId, address stakerAddress) {

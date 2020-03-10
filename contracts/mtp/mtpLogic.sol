@@ -140,45 +140,47 @@ library MTP {
         // removeStaker
         // getStakeChainLength
     function getStakeChainLength(uint256 tokenId) public returns (uint) {
-        return stakeChain[tokenId].length;
+        return mtpStorage.getStakers[tokenId].length;
     }
+
         // mtpTransfer
     function mtpTransfer(address tokenContract_, address to_, uint256 tokenId_) public {
-        require(_isMTPItem(tokenId_), "non fungible transfer: must deposit token to MTP first");
+        onlyMTPItem(tokenContract_, tokenId_);
 
         address from_ = msg.sender;
 
-        if(stakers[to_].staker_Address_ != to_) {
-            addStaker(to_);
+        if(!mtpStorage.getStaker(tokenId_, from_)) {
+            mtpStorage.setStaker(tokenId_, from_);
+            emit StakerAdded(from_);
         }
 
-        Token storage t = tokens[tokenId_];
+        mtpStorage.setStaker(tokenId_, to_);
+        emit StakerAdded(to_);
 
-        stakeChain[tokenId_].push(to_);
-        t.token_Stake_Balance_ += stakeChain[tokenId_].length;
         updateBiboBalances(tokenId_);
 
         ERC721Interface = IERC721(tokenContract_);
         ERC721Interface.safeTransferFrom(from_, to_, tokenId_);
+        emit NewMTPTransfer(tokenContract_, tokenId_, to_, from_);
     }
 
 
-    function pauseTransfer(address tokenContract_, uint256 tokenId, address tokenHolder)  public {
+    // function pauseTransfer(address tokenContract_, uint256 tokenId, address tokenHolder)  public {
 
-        if(balances[tokenHolder] >= 0) {
-            Token storage t = tokens[tokenId];
-            t.is_paused_ = true;
-        }
+    //     if(balances[tokenHolder] >= 0) {
+    //         Token storage t = tokens[tokenId];
+    //         t.is_paused_ = true;
+    //     }
 
-        emit TokenPaused(tokenContract_, tokenHolder, tokenId);
-    }
+    //     emit TokenPaused(tokenContract_, tokenHolder, tokenId);
+    // }
 
     // Internal functions
     //internal - only this  and contracts deriving from it can access
         // isMTPToken
-    function _isMTPItem(uint256 tokenId) internal view returns (bool) {
-        uint256 existingId = tokens[tokenId].token_id_;
-        return existingId == tokenId;
+    modifier onlyMTPItem (address tokenContractAddress, uint256 tokenId) {
+        require (mtpStorage.getToken(tokenContractAddress, tokenId) != 0)
+        _;
     }
 
     // Private functions
@@ -186,14 +188,14 @@ library MTP {
         // updateBiboBalances
 
     function updateBiboBalances(uint256 tokenId) private {
-        address[] memory tokenStakeChain = stakeChain[tokenId];
+        address[] memory tokenStakeChain = mtpStorage.getStakers(tokenId);
 
         for(uint i = 0; i < tokenStakeChain.length; i++) {
             address currentStakerAddress = tokenStakeChain[i];
             uint stakersBefore = i;
             uint stakersAfter = tokenStakeChain.length - (i + 1);
             int  stakerNewStakes = int256(stakersAfter) - int256(stakersBefore);
-            balances[currentStakerAddress] += stakerNewStakes;
+            mtpStorage.setBalance(currentStakerAddress, newBibos);
         }
     }
 }
