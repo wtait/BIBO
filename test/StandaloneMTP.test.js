@@ -53,7 +53,7 @@ describe("StandaloneMTP", function() {
     it("deploy mtp", async function() {
       expect(await this.mtp.owner()).to.equal(owner);
     });
-    it("bob deposit token to mtp and alice borrows it", async function() {
+    it("bob deposits token to mtp and alice borrows it and alice calls token function through mtp interact()", async function() {
       const token_address = await this.token.address;
       await this.token.setApprovalForAll(this.mtp.address, true, { from: bob });
       await this.mtp.deposit(token_address, firstTokenId, { from: bob });
@@ -67,7 +67,7 @@ describe("StandaloneMTP", function() {
       expect(Token._withdraw).to.equal(false);
       await expectRevert(
         this.mtp.borrow(uuid, { from: bob }),
-        "Call must not be current holder"
+        "Caller must not be current holder"
       );
       await this.mtp.borrow(uuid, { from: alice });
       Token = await this.mtp.tokens(uuid);
@@ -94,6 +94,43 @@ describe("StandaloneMTP", function() {
       expect(Token._token_address).to.equal(token_address);
       expect(Token._hold).to.equal(true);
       expect(Token._withdraw).to.equal(false);
+
+      expect(await this.token.getCounts(firstTokenId)).to.be.bignumber.equal(
+        "1"
+      );
+      await this.mtp.interact(
+        await this.token.address,
+        "increment(uint256)",
+        Token._mtp_uuid,
+        {
+          from: alice
+        }
+      );
+
+      await expectRevert(
+        this.mtp.interact(
+          await this.token.address,
+          "increment(uint256)",
+          Token._mtp_uuid,
+          { from: bob }
+        ),
+        "Caller must be current holder"
+      );
+
+      expect(await this.token.getCounts(firstTokenId)).to.be.bignumber.equal(
+        "2"
+      );
+      await this.mtp.interact(
+        await this.token.address,
+        "decrement(uint256)",
+        Token._mtp_uuid,
+        {
+          from: alice
+        }
+      );
+      expect(await this.token.getCounts(firstTokenId)).to.be.bignumber.equal(
+        "1"
+      );
     });
   });
 });
