@@ -88,16 +88,17 @@ contract StandaloneMTP is Initializable, Ownable {
     _setDC(contract_address);
     bytes4 sig = bytes4(keccak256(bytes(function_call)));
     uint256 val = tokens[uuid]._token_id;
-    assembly {
-      let ptr := mload(0x40)
-      mstore(ptr, sig)
-      mstore(add(ptr, 0x04), val)
-      let result := call(15000, sload(_contract_slot), 0, ptr, 0x24, ptr, 0x20)
-      if eq(result, 0) {
-        revert(0, 0)
-      }
-      mstore(0x40, add(ptr, 0x24))
-    }
+    _contract.call(abi.encodePacked(sig, val));
+    //assembly {
+    //let ptr := mload(0x40)
+    //mstore(ptr, sig)
+    //mstore(add(ptr, 0x04), val)
+    //let result := call(15000, sload(_contract_slot), 0, ptr, 0x24, ptr, 0x20)
+    //if eq(result, 0) {
+    //revert(0, 0)
+    //}
+    //mstore(0x40, add(ptr, 0x24))
+    //}
   }
 
   function getAlluuids() public view returns (uint256) {
