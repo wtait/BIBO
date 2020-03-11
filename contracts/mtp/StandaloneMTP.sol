@@ -96,7 +96,6 @@ contract StandaloneMTP is Initializable, Ownable {
       if eq(result, 0) {
         revert(0, 0)
       }
-      //answer := mload(ptr)
       mstore(0x40, add(ptr, 0x24))
     }
   }
