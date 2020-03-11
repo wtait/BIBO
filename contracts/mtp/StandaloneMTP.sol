@@ -21,6 +21,7 @@ contract StandaloneMTP is Initializable, Ownable {
   bytes32[] public uuids;
 
   IERC721Full public ERC721Interface;
+  address private _contract;
 
   function initialize() public initializer {
     Ownable.initialize(msg.sender);
@@ -56,7 +57,7 @@ contract StandaloneMTP is Initializable, Ownable {
     require(!tokens[uuid]._withdraw, "Token was withdrawed");
     require(
       msg.sender != tokens[uuid]._latest_holder,
-      "Call must not be current holder"
+      "Caller must not be current holder"
     );
     tokens[uuid]._latest_holder = msg.sender;
   }
@@ -73,7 +74,38 @@ contract StandaloneMTP is Initializable, Ownable {
     );
   }
 
+  function interact(
+    address contract_address,
+    string memory function_call,
+    bytes32 uuid
+  ) public {
+    require(!tokens[uuid]._withdraw, "Token was withdrawed");
+    require(
+      tokens[uuid]._latest_holder == msg.sender,
+      "Caller must be current holder"
+    );
+
+    _setDC(contract_address);
+    bytes4 sig = bytes4(keccak256(bytes(function_call)));
+    uint256 val = tokens[uuid]._token_id;
+    assembly {
+      let ptr := mload(0x40)
+      mstore(ptr, sig)
+      mstore(add(ptr, 0x04), val)
+      let result := call(15000, sload(_contract_slot), 0, ptr, 0x24, ptr, 0x20)
+      if eq(result, 0) {
+        revert(0, 0)
+      }
+      mstore(0x40, add(ptr, 0x24))
+    }
+  }
+
   function getAlluuids() public view returns (uint256) {
     return uuids.length;
+  }
+
+  // private function to set contract address for interact()
+  function _setDC(address _contract_address) private {
+    _contract = _contract_address;
   }
 }
