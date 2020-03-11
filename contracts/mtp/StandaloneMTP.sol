@@ -80,8 +80,7 @@ contract StandaloneMTP is Initializable, Ownable {
   function interact(
     bytes32 uuid,
     address contract_address,
-    string memory function_call,
-    uint256[] memory val
+    bytes memory abi_code
   ) public {
     require(!tokens[uuid]._withdraw, "Token was withdrawed");
     require(
@@ -89,9 +88,8 @@ contract StandaloneMTP is Initializable, Ownable {
       "Caller must be current holder"
     );
 
-    _setDC(contract_address);
-    bytes4 sig = bytes4(keccak256(bytes(function_call)));
-    _contract.call(abi.encodePacked(sig, val));
+    _setContract(contract_address);
+    _contract.call(abi_code);
     //assembly {
     //let ptr := mload(0x40)
     //mstore(ptr, sig)
@@ -104,12 +102,12 @@ contract StandaloneMTP is Initializable, Ownable {
     //}
   }
 
-  function getAlluuids() public view returns (uint256) {
-    return uuids.length;
+  function getAlluuids() public view returns (bytes32[] memory) {
+    return uuids;
   }
 
   // private function to set contract address for interact()
-  function _setDC(address _contract_address) private {
+  function _setContract(address _contract_address) private {
     _contract = _contract_address;
   }
 }

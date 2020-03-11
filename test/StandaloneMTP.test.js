@@ -102,8 +102,14 @@ describe("StandaloneMTP", function() {
       await this.mtp.interact(
         Token._mtp_uuid,
         await this.token.address,
-        "increment(uint256)",
-        [Token._token_id],
+        web3.eth.abi.encodeFunctionCall(
+          {
+            name: "increment",
+            type: "function",
+            inputs: [{ type: "uint256", name: "tokenId" }]
+          },
+          [`${Token._token_id}`]
+        ),
         {
           from: alice
         }
@@ -113,8 +119,14 @@ describe("StandaloneMTP", function() {
         this.mtp.interact(
           Token._mtp_uuid,
           await this.token.address,
-          "increment(uint256)",
-          [Token._token_id],
+          web3.eth.abi.encodeFunctionCall(
+            {
+              name: "decrement",
+              type: "function",
+              inputs: [{ type: "uint256", name: "tokenId" }]
+            },
+            [`${Token._token_id}`]
+          ),
           { from: bob }
         ),
         "Caller must be current holder"
@@ -126,8 +138,14 @@ describe("StandaloneMTP", function() {
       await this.mtp.interact(
         Token._mtp_uuid,
         await this.token.address,
-        "decrement(uint256)",
-        [Token._token_id],
+        web3.eth.abi.encodeFunctionCall(
+          {
+            name: "decrement",
+            type: "function",
+            inputs: [{ type: "uint256", name: "tokenId" }]
+          },
+          [`${Token._token_id}`]
+        ),
         {
           from: alice
         }
@@ -138,8 +156,17 @@ describe("StandaloneMTP", function() {
       await this.mtp.interact(
         Token._mtp_uuid,
         await this.token.address,
-        "addByNumber(uint256,uint256)",
-        [Token._token_id, 5],
+        web3.eth.abi.encodeFunctionCall(
+          {
+            name: "addByNumber",
+            type: "function",
+            inputs: [
+              { type: "uint256", name: "tokenId" },
+              { type: "uint256", name: "num" }
+            ]
+          },
+          [`${Token._token_id}`, `${5}`]
+        ),
         {
           from: alice
         }
