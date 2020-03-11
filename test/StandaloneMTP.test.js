@@ -33,6 +33,7 @@ describe("StandaloneMTP", function() {
         from: alice
       });
       await this.token.increment(firstTokenId, { from: bob });
+      await this.token.addByNumber(secondTokenId, 5, { from: alice });
     });
     it("create token", async function() {
       expect(await this.token.balanceOf(alice)).to.be.bignumber.equal("1");
@@ -47,7 +48,7 @@ describe("StandaloneMTP", function() {
         "1"
       );
       expect(await this.token.getCounts(secondTokenId)).to.be.bignumber.equal(
-        "0"
+        "5"
       );
     });
     it("deploy mtp", async function() {
@@ -99,9 +100,10 @@ describe("StandaloneMTP", function() {
         "1"
       );
       await this.mtp.interact(
+        Token._mtp_uuid,
         await this.token.address,
         "increment(uint256)",
-        Token._mtp_uuid,
+        [Token._token_id],
         {
           from: alice
         }
@@ -109,9 +111,10 @@ describe("StandaloneMTP", function() {
 
       await expectRevert(
         this.mtp.interact(
+          Token._mtp_uuid,
           await this.token.address,
           "increment(uint256)",
-          Token._mtp_uuid,
+          [Token._token_id],
           { from: bob }
         ),
         "Caller must be current holder"
@@ -121,15 +124,28 @@ describe("StandaloneMTP", function() {
         "2"
       );
       await this.mtp.interact(
+        Token._mtp_uuid,
         await this.token.address,
         "decrement(uint256)",
-        Token._mtp_uuid,
+        [Token._token_id],
         {
           from: alice
         }
       );
       expect(await this.token.getCounts(firstTokenId)).to.be.bignumber.equal(
         "1"
+      );
+      await this.mtp.interact(
+        Token._mtp_uuid,
+        await this.token.address,
+        "addByNumber(uint256,uint256)",
+        [Token._token_id, 5],
+        {
+          from: alice
+        }
+      );
+      expect(await this.token.getCounts(firstTokenId)).to.be.bignumber.equal(
+        "6"
       );
     });
   });

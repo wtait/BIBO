@@ -6,7 +6,10 @@ import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC721/IERC721Full.sol";
 
 
+//import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+
 contract StandaloneMTP is Initializable, Ownable {
+  //using SafeMath for uint256;
   struct Token {
     bytes32 _mtp_uuid;
     address _token_address;
@@ -75,9 +78,10 @@ contract StandaloneMTP is Initializable, Ownable {
   }
 
   function interact(
+    bytes32 uuid,
     address contract_address,
     string memory function_call,
-    bytes32 uuid
+    uint256[] memory val
   ) public {
     require(!tokens[uuid]._withdraw, "Token was withdrawed");
     require(
@@ -87,17 +91,17 @@ contract StandaloneMTP is Initializable, Ownable {
 
     _setDC(contract_address);
     bytes4 sig = bytes4(keccak256(bytes(function_call)));
-    uint256 val = tokens[uuid]._token_id;
-    assembly {
-      let ptr := mload(0x40)
-      mstore(ptr, sig)
-      mstore(add(ptr, 0x04), val)
-      let result := call(15000, sload(_contract_slot), 0, ptr, 0x24, ptr, 0x20)
-      if eq(result, 0) {
-        revert(0, 0)
-      }
-      mstore(0x40, add(ptr, 0x24))
-    }
+    _contract.call(abi.encodePacked(sig, val));
+    //assembly {
+    //let ptr := mload(0x40)
+    //mstore(ptr, sig)
+    //mstore(add(ptr, 0x04), val)
+    //let result := call(15000, sload(_contract_slot), 0, ptr, 0x24, ptr, 0x20)
+    //if eq(result, 0) {
+    //revert(0, 0)
+    //}
+    //mstore(0x40, add(ptr, 0x24))
+    //}
   }
 
   function getAlluuids() public view returns (uint256) {
