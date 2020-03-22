@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "oz compile && mocha --exit --recursive test"
+    "test": "oz compile && mocha --timeout 20000 --exit --recursive test"
   },
   "author": "",
   "license": "ISC",
