@@ -1,13 +1,13 @@
-pragma solidity ^0.5.12;
+pragma solidity ^0.6;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721Full.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721Mintable.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721Metadata.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721Burnable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+//import "@openzeppelin/contracts/token/ERC721/ERC721Mintable.sol";
+//import "@openzeppelin/contracts/token/ERC721/ERC721Metadata.sol";
+//import "@openzeppelin/contracts/token/ERC721/ERC721Burnable.sol";
 
 
-contract TestNFT is ERC721Full, ERC721Mintable{
-    constructor () ERC721Full("Test NFT", "NFTY") public {}
+contract TestNFT is ERC721 {
+    constructor () ERC721("Test NFT", "NFTY") public {}
 
     /**
     * Custom accessor to create a unique token

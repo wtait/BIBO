@@ -1,39 +1,43 @@
-pragma solidity ^0.5.12; 
+// pragma solidity ^0.6; 
 
 
-contract mtpInterface {
+// contract mtpInterface {
 
 
-    function depositToken(address contractAddress, address tokenOwner, uint256 tokenId) public;
+//     // function depositToken(address contractAddress, address tokenOwner, uint256 tokenId) public;
 
-    // withdrawToken(address contractAddress, address tokenOwner, uint256 tokenId) public;
+//     // // withdrawToken(address contractAddress, address tokenOwner, uint256 tokenId) public;
 
-    // burnStakes(uint256 tokenId) private;
+//     // // burnStakes(uint256 tokenId) private;
 
-    function addStaker(address stakerAddress_) public;
+//     // function addStaker(address stakerAddress_) public;
 
-    // addStakerToQeue
-        //
-    // removeStaker
-    // getStakeChainLength
+//     // addStakerToQeue
+//         //
+//     // removeStaker
+//     // getStakeChainLength
 
-
-    function getStakeChainLength(uint256 tokenId) public returns (uint);
-
-
-    function mtpTransfer(address tokenContract_, address to_, uint256 tokenId_) public;
+//     function newProxy(address stakerAddress_) public returns (address);
 
 
-    function pauseTransfer(address tokenContract_, uint256 tokenId, address tokenHolder)  public;
+//     // function getStakeChainLength(uint256 tokenId) public returns (uint);
 
-    // Internal functions
-    //internal - only this  and contracts deriving from it can access
 
-    function _isMTPItem(uint256 tokenId) internal view returns (bool);
+//     function mtpTransfer(address tokenContract_, address to_, uint256 tokenId_) public;
 
-    // Private functions
-    //private - can be accessed only from this contract
 
-    function updateBiboBalances(uint256 tokenId) private;
+//     //function pauseTransfer(address tokenContract_, uint256 tokenId, address tokenHolder)  public;
 
-}
+//     // Internal functions
+//     //internal - only this  and contracts deriving from it can access
+
+//     //function _isMTPItem(uint256 tokenId) internal view returns (bool);
+
+//     // Private functions
+//     //private - can be accessed only from this contract
+
+//     //function updateBiboBalances(uint256 tokenId) private;
+
+//     function getBalance(address account) public returns(int);
+
+// }
