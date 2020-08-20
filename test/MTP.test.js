@@ -33,7 +33,6 @@ describe("MTP logic ", () => {
         var libAddress, cloneFactoryAddress;
         // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
         var retVal = 0x150b7a02;
-        //var mtpAdress;
 
         await mtpLibContract.new().then(async function(instance) {
             libAddress = instance.address;
@@ -47,13 +46,9 @@ describe("MTP logic ", () => {
         });
         await biboWalletContract.new(retVal, false).then(async function(instance) {
            biboWalletAddress = instance.address;
-           console.log("bibo wallet address at deploy: " + biboWalletAddress);
         });
         this.mtpContract = await MtpContract.new();
-        //await deployer.deploy(MtpContract);
         this.mtpContract = await MtpContract.new();
-        console.log(this.mtpContract.methods);
-        //await this.mtpContract.test();
         await this.mtpContract.setPublicBiboWalletAddress(biboWalletAddress);
         // .then(async function(instance) {
         //   mtpAddress = instance.address;
@@ -65,7 +60,6 @@ describe("MTP logic ", () => {
         //set the deployed address of the template contract that others will be cloned from
         
         mtpAddress = await this.mtpContract.address;
-        console.log("mtp contract address is: " + mtpAddress);
         this.nftokenContract = await NFTContract.new();
         this.nfTokenAddress = await this.nftokenContract.address
         this.nftokenId = new BN('5042');
@@ -116,13 +110,6 @@ describe("MTP logic ", () => {
         });
 
         it('should update balances on transfer', async function() {
-                  
-          let balanceAlice = await this.mtpContract.getBalance.call(alice);
-          let balanceBob = await this.mtpContract.getBalance.call(bob);
-          balanceBob = balanceBob.toNumber();
-          balanceAlice = balanceAlice.toNumber();
-          balanceAlice.should.equal(0);
-          balanceBob.should.equal(0);
 
           await this.mtpContract.createWallet(salt, alice);
           salt = await getSalt();
@@ -134,12 +121,26 @@ describe("MTP logic ", () => {
           let owner = await this.nftokenContract.ownerOf(this.nftokenId);
           owner.should.equal(alice);
 
+          let balanceAlice = await this.mtpContract.getBalance.call(aliceBiboWallet);
+          let balanceBob = await this.mtpContract.getBalance.call(bobBiboWallet);
+          balanceBob = balanceBob.toNumber();
+          balanceAlice = balanceAlice.toNumber();
+          balanceAlice.should.equal(0);
+          balanceBob.should.equal(0);
+
           await this.nftokenContract.setApprovalForAll(mtpAddress, true, { from: alice });
           let mtpIsOperator = await this.nftokenContract.isApprovedForAll(alice, mtpAddress);
           mtpIsOperator.should.be.true;
           await this.mtpContract.depositToken(this.nfTokenAddress, alice, aliceBiboWallet, this.nftokenId);
           owner = await this.nftokenContract.ownerOf(this.nftokenId);
           owner.should.equal(aliceBiboWallet);
+
+          balanceAlice = await this.mtpContract.getBalance.call(aliceBiboWallet);
+          balanceBob = await this.mtpContract.getBalance.call(bobBiboWallet);
+          balanceBob = balanceBob.toNumber();
+          balanceAlice = balanceAlice.toNumber();
+          balanceAlice.should.equal(0);
+          balanceBob.should.equal(0);
           
           await aliceWalletContract.approved(this.nftokenContract.address, mtpAddress);
           aliceWalletOperator = await this.nftokenContract.isApprovedForAll(aliceBiboWallet, mtpAddress);
@@ -148,22 +149,50 @@ describe("MTP logic ", () => {
           let newOwner = await this.nftokenContract.ownerOf(this.nftokenId);
           newOwner.should.equal(bobBiboWallet);
 
-
-
-
-
-            // await this.nftokenContract.setApprovalForAll(this.mtpAddress, true, {from: alice});
-            // await this.mtp.mtpTransfer(this.nfTokenAddress, bob, this.nftokenId, {from: alice});
-
-
-            // balanceAlice = await this.mtp.getBalance.call(alice);
-            // balanceBob = await this.mtp.getBalance.call(bob);
-            // balanceAlice = balanceAlice.toNumber();
-            // balanceBob = balanceBob.toNumber();
-            // balanceAlice.should.equal(1);
-            // balanceBob.should.equal(-1);
+          balanceAlice = await this.mtpContract.getBalance.call(aliceBiboWallet);
+          balanceBob = await this.mtpContract.getBalance.call(bobBiboWallet);
+          balanceBob = balanceBob.toNumber();
+          balanceAlice = balanceAlice.toNumber();
+          balanceAlice.should.equal(1);
+          balanceBob.should.equal(-1);
 
         });
+        it('should add biboWallet addresses to tokens stake chain upon mtp transfers and deposits', async function () {
+          let tokenStakers;
+
+          await this.mtpContract.createWallet(salt, alice);
+          salt = await getSalt();
+          let aliceBiboWallet = await this.mtpContract.getUserWalletAddress.call(alice);
+          let aliceWalletContract = await biboWalletContract.at(aliceBiboWallet);
+          await aliceWalletContract.intitialize(alice, mtpAddress);
+          await this.mtpContract.createWallet(salt, bob);
+          let bobBiboWallet = await this.mtpContract.getUserWalletAddress.call(bob);
+          let owner = await this.nftokenContract.ownerOf(this.nftokenId);
+          owner.should.equal(alice);
+
+          tokenStakers = await this.mtpContract.getTokenStakers.call(this.nfTokenAddress, this.nftokenId);
+          console.log('token stake chain: ' + tokenStakers);
+
+          await this.nftokenContract.setApprovalForAll(mtpAddress, true, { from: alice });
+          let mtpIsOperator = await this.nftokenContract.isApprovedForAll(alice, mtpAddress);
+          mtpIsOperator.should.be.true;
+          await this.mtpContract.depositToken(this.nfTokenAddress, alice, aliceBiboWallet, this.nftokenId);
+          owner = await this.nftokenContract.ownerOf(this.nftokenId);
+          owner.should.equal(aliceBiboWallet);
+
+          tokenStakers = await this.mtpContract.getTokenStakers.call(this.nfTokenAddress, this.nftokenId);
+          tokenStakers.should.eql([aliceBiboWallet]);
+
+          await aliceWalletContract.approved(this.nftokenContract.address, mtpAddress);
+          aliceWalletOperator = await this.nftokenContract.isApprovedForAll(aliceBiboWallet, mtpAddress);
+          aliceWalletOperator.should.be.true;
+          await this.mtpContract.mtpTransfer(this.nfTokenAddress, aliceBiboWallet, bobBiboWallet, this.nftokenId);
+          let newOwner = await this.nftokenContract.ownerOf(this.nftokenId);
+          newOwner.should.equal(bobBiboWallet);
+
+          tokenStakers = await this.mtpContract.getTokenStakers.call(this.nfTokenAddress, this.nftokenId);
+          tokenStakers.should.eql([aliceBiboWallet, bobBiboWallet]);
+        })
         // it('should create a proxy address for users', async function() {
         //   let aliceProxy = null;
 

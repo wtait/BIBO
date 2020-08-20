@@ -19,6 +19,7 @@ contract mtp {
 
 //******************
     using mtpLib for mtpLib.BiboStorage;
+
     using Clone2Factory for address;
 
     mtpLib.BiboStorage balancesStorage;
@@ -75,6 +76,8 @@ contract mtp {
     function depositToken(address tokenContract_, address depositor_, address biboWallet_, uint256 tokenId_) public {
         ERC721Interface = IERC721(tokenContract_);
         ERC721Interface.safeTransferFrom(depositor_, biboWallet_, tokenId_);
+        //add staker to token
+        mtpLib.setStaker(balancesStorage, tokenContract_, tokenId_, biboWallet_);
     }
 
     //transfer a token between bibowallets and update bibo balances
@@ -83,6 +86,8 @@ contract mtp {
         ERC721Interface = IERC721(tokenContract_);
         ERC721Interface.transferFrom(from_, to_, tokenId_);
         mtpLib.updateBalances(balancesStorage, from_, to_);
+        //add to_ to token stakers
+        mtpLib.setStaker(balancesStorage, tokenContract_, tokenId_, to_);
     }
 
 
@@ -97,6 +102,10 @@ contract mtp {
     // need to modify with onlyOwner
     function setPublicBiboWalletAddress(address payable _publicWalletAddress) public {
         publicBiboWalletAddress = _publicWalletAddress;
+    }
+
+    function getTokenStakers(address tokenContract_, uint256 tokenId_) public view returns (address[] memory) {
+        return mtpLib.getStakers(balancesStorage, tokenContract_, tokenId_);
     }
 
 //***********

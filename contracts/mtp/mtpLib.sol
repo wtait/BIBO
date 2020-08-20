@@ -2,17 +2,13 @@
 pragma solidity ^0.6; 
 
 
-library MTP {
-    
-}
-
 
 
 
 
 // // Import statements
 // import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC721/IERC721.sol";
-// import "./mtpStorage.sol";
+//import "./mtpStorage.sol";
 
 
 
@@ -20,6 +16,7 @@ library MTP {
 //     //IERC721 public ERC721Interface;
 //     //IMTP public MTPInterface
 // // Libraries
+
 
 // // Contracts
 
@@ -210,8 +207,20 @@ library MTP {
 
 library mtpLib {
 
+
+
     struct BiboStorage {
         mapping(address => int) balances;
+        mapping (address => mapping (uint256 => address[])) stakers;
+    }
+
+    function getStakers(BiboStorage storage self, address tokenContract, uint256 tokenId) public view returns (address[] memory) {
+        return self.stakers[tokenContract][tokenId];
+    }
+
+    function setStaker(BiboStorage storage self, address tokenContract, uint256 tokenId, address newStaker) public returns (bool success) {
+        self.stakers[tokenContract][tokenId].push(newStaker);
+        return true;
     }
 
     function updateBalances(BiboStorage storage self, address _from, address _to) public returns (bool success) {
