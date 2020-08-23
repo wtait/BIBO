@@ -170,9 +170,6 @@ describe("MTP logic ", () => {
           let owner = await this.nftokenContract.ownerOf(this.nftokenId);
           owner.should.equal(alice);
 
-          tokenStakers = await this.mtpContract.getTokenStakers.call(this.nfTokenAddress, this.nftokenId);
-          console.log('token stake chain: ' + tokenStakers);
-
           await this.nftokenContract.setApprovalForAll(mtpAddress, true, { from: alice });
           let mtpIsOperator = await this.nftokenContract.isApprovedForAll(alice, mtpAddress);
           mtpIsOperator.should.be.true;

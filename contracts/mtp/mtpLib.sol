@@ -223,9 +223,20 @@ library mtpLib {
         return true;
     }
 
-    function updateBalances(BiboStorage storage self, address _from, address _to) public returns (bool success) {
-        self.balances[_from] += 1;
-        self.balances[_to] -= 1;
+    function updateBalances(BiboStorage storage self, address tokenContract, uint256 tokenId, address _from, address _to) public returns (bool success) {
+        //self.balances[_from] += 1;
+        //self.balances[_to] -= 1;
+        //address[] memory tokenStakeChain = self.stakers[tokenContract][tokenId];
+        uint numStakers = self.stakers[tokenContract][tokenId].length;
+
+        for(uint i = 0; i < numStakers; i++) {
+            address currentStakerAddress = self.stakers[tokenContract][tokenId][i];
+            uint stakersBefore = i;
+            uint stakersAfter = numStakers - (i + 1);
+            int  newBibos = int256(stakersAfter) - int256(stakersBefore);
+            //mtpStorage.setBalance(currentStakerAddress, newBibos);
+            self.balances[currentStakerAddress] += newBibos;
+        }
         return true;
     }
 

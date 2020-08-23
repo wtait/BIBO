@@ -85,11 +85,17 @@ contract mtp {
 
         ERC721Interface = IERC721(tokenContract_);
         ERC721Interface.transferFrom(from_, to_, tokenId_);
-        mtpLib.updateBalances(balancesStorage, from_, to_);
-        //add to_ to token stakers
         mtpLib.setStaker(balancesStorage, tokenContract_, tokenId_, to_);
+        mtpLib.updateBalances(balancesStorage, tokenContract_, tokenId_, from_, to_);
+
     }
 
+    function mtpQeueStaker(address tokenContract_, address from_, address to_, uint256 tokenId_) public {
+        ERC721Interface = IERC721(tokenContract_);
+        mtpLib.setStaker(balancesStorage, tokenContract_, tokenId_, to_);
+        mtpLib.updateBalances(balancesStorage, tokenContract_, tokenId_, from_, to_);
+
+    }
 
     //retrieve the bibo balance of a bibowallet
     function getBalance(address _account) public returns (int) {
