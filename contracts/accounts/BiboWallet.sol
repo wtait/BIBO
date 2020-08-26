@@ -12,7 +12,7 @@ contract BiboWallet {
     //event Received(address operator, address from, uint256 tokenId, bytes data, uint256 gas);
 
    //####not secure, just for testing#####
-    function intitialize (address accountOwner_, address mtpContract_) public  returns (address) {
+    function initialize (address accountOwner_, address mtpContract_) public  returns (address) {
         accountHolderAddress = accountOwner_;
         mtpContractAddress = mtpContract_;
     }

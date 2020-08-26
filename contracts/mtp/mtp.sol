@@ -13,9 +13,7 @@ import "../accounts/Clone2Factory.sol";
 
 contract mtp {
 
-    function test() public returns (int) {
-        return 69696969;
-    }
+
 
 //******************
     using mtpLib for mtpLib.BiboStorage;
@@ -76,7 +74,6 @@ contract mtp {
     function depositToken(address tokenContract_, address depositor_, address biboWallet_, uint256 tokenId_) public {
         ERC721Interface = IERC721(tokenContract_);
         ERC721Interface.safeTransferFrom(depositor_, biboWallet_, tokenId_);
-        //add staker to token
         mtpLib.setStaker(balancesStorage, tokenContract_, tokenId_, biboWallet_);
     }
 
@@ -91,6 +88,8 @@ contract mtp {
     }
 
     function mtpQeueStaker(address tokenContract_, address from_, address to_, uint256 tokenId_) public {
+        //need to implement a flageForPause such that, if desired, the qeued receiver can set the token to pause when it does transfer to them.
+        
         ERC721Interface = IERC721(tokenContract_);
         mtpLib.setStaker(balancesStorage, tokenContract_, tokenId_, to_);
         mtpLib.updateBalances(balancesStorage, tokenContract_, tokenId_, from_, to_);
