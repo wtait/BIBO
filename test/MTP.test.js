@@ -50,12 +50,6 @@ describe("MTP logic ", () => {
         this.mtpContract = await MtpContract.new();
         this.mtpContract = await MtpContract.new();
         await this.mtpContract.setPublicBiboWalletAddress(biboWalletAddress);
-        // .then(async function(instance) {
-        //   mtpAddress = instance.address;
-        //   console.log("mtp Address at deploy: " + mtpAddress);
-        //   //console.log(instance);
-        //   //return instance;
-        // });
         
         //set the deployed address of the template contract that others will be cloned from
         
